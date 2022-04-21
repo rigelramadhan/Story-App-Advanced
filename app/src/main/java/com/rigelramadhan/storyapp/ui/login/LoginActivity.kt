@@ -1,6 +1,5 @@
 package com.rigelramadhan.storyapp.ui.login
 
-import android.content.Context
 import android.content.Intent
 import android.os.Bundle
 import android.util.Log
@@ -8,30 +7,22 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.data.Result
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.databinding.ActivityLoginBinding
 import com.rigelramadhan.storyapp.ui.main.MainActivity
 import com.rigelramadhan.storyapp.ui.register.RegisterActivity
 import com.rigelramadhan.storyapp.ui.welcome.WelcomeActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "token")
-
+@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private val binding: ActivityLoginBinding by lazy {
         ActivityLoginBinding.inflate(layoutInflater)
     }
 
-    private val loginViewModel: LoginViewModel by viewModels {
-        LoginViewModel.LoginViewModelFactory.getInstance(
-            LoginPreferences.getInstance(dataStore)
-        )
-    }
+    private val loginViewModel: LoginViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

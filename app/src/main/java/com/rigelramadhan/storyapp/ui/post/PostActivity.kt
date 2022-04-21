@@ -1,6 +1,5 @@
 package com.rigelramadhan.storyapp.ui.post
 
-import android.content.Context
 import android.content.Intent
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
@@ -9,35 +8,26 @@ import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.data.Result
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.databinding.ActivityPostBinding
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
 import com.rigelramadhan.storyapp.ui.main.MainActivity
 import com.rigelramadhan.storyapp.utils.AppExecutors
 import com.rigelramadhan.storyapp.utils.reduceFileImage
 import com.rigelramadhan.storyapp.utils.rotateBitmap
+import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "token")
-
+@AndroidEntryPoint
 class PostActivity : AppCompatActivity() {
 
     private val binding: ActivityPostBinding by lazy {
         ActivityPostBinding.inflate(layoutInflater)
     }
 
-    private val postViewModel: PostViewModel by viewModels {
-        PostViewModel.PostViewModelFactory.getInstance(
-            this,
-            LoginPreferences.getInstance(dataStore)
-        )
-    }
+    private val postViewModel: PostViewModel by viewModels()
 
     private val appExecutor: AppExecutors by lazy {
         AppExecutors()

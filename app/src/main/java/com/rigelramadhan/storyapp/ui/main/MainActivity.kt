@@ -1,7 +1,6 @@
 package com.rigelramadhan.storyapp.ui.main
 
 import android.Manifest
-import android.content.Context
 import android.content.Intent
 import android.content.pm.PackageManager
 import android.os.Bundle
@@ -14,45 +13,101 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import androidx.core.app.ActivityCompat
 import androidx.core.content.ContextCompat
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
+import androidx.lifecycle.lifecycleScope
+import androidx.paging.ExperimentalPagingApi
+import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.adapter.StoriesAdapter
-import com.rigelramadhan.storyapp.data.Result
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
+import com.rigelramadhan.storyapp.adapter.StoryLoadingStateAdapter
 import com.rigelramadhan.storyapp.databinding.ActivityMainBinding
 import com.rigelramadhan.storyapp.ui.camera.CameraActivity
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
+import dagger.hilt.android.AndroidEntryPoint
+import kotlinx.coroutines.launch
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "token")
-
+@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val mainViewModel: MainViewModel by viewModels {
-        MainViewModel.MainViewModelFactory.getInstance(
-            this,
-            LoginPreferences.getInstance(dataStore)
-        )
-    }
+    private val mainViewModel: MainViewModel by viewModels()
+
+    private val adapter = StoriesAdapter()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
 
+        setupAdapter()
         setupButtons()
     }
 
+    @ExperimentalPagingApi
+    private fun getData(token: String) {
+        lifecycleScope.launch {
+            mainViewModel.getStories(token).observe(this@MainActivity) {
+                adapter.submitData(this@MainActivity.lifecycle, it)
+            }
+        }
+    }
+
+    private fun setupAdapter() {
+        binding.rvStories.apply {
+            adapter = this@MainActivity.adapter.withLoadStateHeaderAndFooter(
+                header = StoryLoadingStateAdapter {
+                    retry()
+                },
+                footer = StoryLoadingStateAdapter {
+                    retry()
+                }
+            )
+
+            layoutManager = LinearLayoutManager(this@MainActivity)
+            setHasFixedSize(true)
+        }
+
+        adapter.addLoadStateListener { loadState ->
+            if (loadState.mediator?.refresh is LoadState.Loading) {
+                if (adapter.snapshot().isEmpty()) {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                binding.tvNoStory.visibility = View.INVISIBLE
+            } else {
+                binding.progressBar.visibility = View.INVISIBLE
+                binding.swipeLayout.isRefreshing = false
+
+                val error = when {
+                    loadState.mediator?.refresh is LoadState.Error -> loadState.mediator?.refresh as LoadState.Error
+                    loadState.mediator?.prepend is LoadState.Error -> loadState.mediator?.prepend as LoadState.Error
+                    loadState.mediator?.append is LoadState.Error -> loadState.mediator?.append as LoadState.Error
+                    else -> null
+                }
+
+                error?.let {
+                    if (adapter.snapshot().isEmpty()) {
+                        binding.tvNoStory.visibility = View.VISIBLE
+                        binding.tvNoStory.text = it.error.localizedMessage
+                    }
+                }
+            }
+        }
+    }
+
+    private fun retry() {
+        adapter.retry()
+    }
+
+    @ExperimentalPagingApi
     override fun onResume() {
         super.onResume()
         checkIfSessionValid()
     }
 
+    @ExperimentalPagingApi
     private fun checkIfSessionValid() {
         mainViewModel.checkIfTokenAvailable().observe(this) {
             if (it == "null") {
@@ -61,38 +116,7 @@ class MainActivity : AppCompatActivity() {
                 startActivity(intent)
                 finish()
             } else {
-                setupView("Bearer $it")
-            }
-        }
-    }
-
-    private fun setupView(token: String) {
-        supportActionBar?.title = getString(R.string.feed)
-        mainViewModel.getStories(token).observe(this) {
-            when (it) {
-                is Result.Loading -> {
-                    binding.progressBar.visibility = View.VISIBLE
-                }
-
-                is Result.Error -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    val error = it.error
-                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-                }
-
-                is Result.Success -> {
-                    binding.progressBar.visibility = View.INVISIBLE
-                    val data = it.data
-                    if (data.isEmpty()) {
-                        binding.tvNoStory.visibility = View.VISIBLE
-                    } else {
-                        binding.tvNoStory.visibility = View.INVISIBLE
-                        binding.rvStories.apply {
-                            adapter = StoriesAdapter(this@MainActivity, data)
-                            layoutManager = LinearLayoutManager(this@MainActivity)
-                        }
-                    }
-                }
+                getData("Bearer $it")
             }
         }
     }

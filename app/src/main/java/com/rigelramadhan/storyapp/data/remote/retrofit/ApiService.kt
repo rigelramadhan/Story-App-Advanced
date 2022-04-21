@@ -11,11 +11,11 @@ import retrofit2.http.*
 
 interface ApiService {
     @GET("stories")
-    fun getStories(
+    suspend fun getStories(
         @Header("Authorization") token: String,
         @Query("page") page: Int? = null,
         @Query("size") size: Int? = null
-    ): Call<StoriesResponse>
+    ): StoriesResponse
 
     @Multipart
     @POST("stories")

@@ -3,11 +3,14 @@ package com.rigelramadhan.storyapp.ui.login
 import androidx.lifecycle.*
 import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.data.repository.UserRepository
-import com.rigelramadhan.storyapp.di.Injection
+import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class LoginViewModel(
+@HiltViewModel
+class LoginViewModel @Inject constructor(
     private val userRepository: UserRepository,
     private val loginPreferences: LoginPreferences
 ) : ViewModel() {
@@ -24,34 +27,5 @@ class LoginViewModel(
 
     fun checkIfFirstTime(): LiveData<Boolean> {
         return loginPreferences.isFirstTime().asLiveData()
-    }
-
-    class LoginViewModelFactory private constructor(
-        private val userRepository: UserRepository,
-        private val loginPreferences: LoginPreferences
-    ) :
-        ViewModelProvider.NewInstanceFactory() {
-        @Suppress("UNCHECKED_CAST")
-        override fun <T : ViewModel> create(modelClass: Class<T>): T {
-            if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
-                return LoginViewModel(userRepository, loginPreferences) as T
-            }
-
-            throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
-        }
-
-        companion object {
-            @Volatile
-            private var instance: LoginViewModelFactory? = null
-            fun getInstance(
-                loginPreferences: LoginPreferences
-            ): LoginViewModelFactory =
-                instance ?: synchronized(this) {
-                    instance ?: LoginViewModelFactory(
-                        Injection.provideUserRepository(),
-                        loginPreferences
-                    )
-                }
-        }
     }
 }

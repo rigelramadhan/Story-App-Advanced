@@ -2,6 +2,8 @@ plugins {
     id 'com.android.application'
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
+    id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
+    id 'dagger.hilt.android.plugin'
 }
 
 android {
@@ -48,6 +50,7 @@ dependencies {
     implementation "androidx.lifecycle:lifecycle-viewmodel-ktx:2.4.1"
     implementation "androidx.lifecycle:lifecycle-livedata-ktx:2.4.1"
     implementation 'androidx.activity:activity-ktx:1.4.0'
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.1.0"
 
 //    GLIDE
     implementation 'com.github.bumptech.glide:glide:4.12.0'
@@ -55,10 +58,11 @@ dependencies {
 //    NETWORKING
     implementation 'com.squareup.retrofit2:retrofit:2.9.0'
     implementation "com.squareup.retrofit2:converter-gson:2.9.0"
-    implementation "com.squareup.okhttp3:logging-interceptor:4.9.0"
+    implementation "com.squareup.okhttp3:logging-interceptor:4.9.1"
 
 //    ROOM
     implementation "androidx.room:room-ktx:2.4.2"
+    implementation "androidx.room:room-paging:2.4.2"
     kapt "androidx.room:room-compiler:2.4.2"
 
 //    CAMERAX
@@ -72,4 +76,24 @@ dependencies {
 
 //    DATASTORE
     implementation "androidx.datastore:datastore-preferences:1.0.0"
+
+//    GOOGLE MAPS
+    implementation 'com.google.android.gms:play-services-maps:18.0.2'
+
+//    PAGING
+    implementation "androidx.paging:paging-runtime-ktx:3.1.1"
+
+//    HILT
+    implementation 'com.google.dagger:hilt-android:2.41'
+    kapt 'com.google.dagger:hilt-compiler:2.41'
+
+    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.41'
+    kaptAndroidTest 'com.google.dagger:hilt-compiler:2.41'
+
+    testImplementation 'com.google.dagger:hilt-android-testing:2.41'
+    kaptTest 'com.google.dagger:hilt-compiler:2.41'
+}
+
+kapt {
+    correctErrorTypes true
 }

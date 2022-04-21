@@ -5,10 +5,12 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.rigelramadhan.storyapp.data.local.entity.StoryEntity
+import com.rigelramadhan.storyapp.data.local.entity.StoryRemoteKeys
 
-@Database(entities = [StoryEntity::class], version = 1)
+@Database(entities = [StoryEntity::class, StoryRemoteKeys::class], version = 1)
 abstract class StoryDatabase : RoomDatabase() {
     abstract fun storyDao(): StoryDao
+    abstract fun storyRemoteKeysDao(): StoryRemoteKeysDao
 
     companion object {
         @Volatile

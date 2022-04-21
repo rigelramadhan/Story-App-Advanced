@@ -65,4 +65,5 @@
     <string name="no_stories_found">No stories found</string>
     <string name="expand_description">Expand description</string>
     <string name="expand_image">Expand image</string>
+    <string name="retry">Retry</string>
 </resources>

@@ -10,8 +10,11 @@ import com.rigelramadhan.storyapp.data.remote.retrofit.ApiService
 import retrofit2.Call
 import retrofit2.Callback
 import retrofit2.Response
+import javax.inject.Inject
+import javax.inject.Singleton
 
-class UserRepository private constructor(
+@Singleton
+class UserRepository @Inject constructor(
     private val apiService: ApiService
 ) {
     private val loginResult = MediatorLiveData<Result<LoginResponse>>()
@@ -94,13 +97,5 @@ class UserRepository private constructor(
         private val TAG = UserRepository::class.java.simpleName
         private const val LOGIN_ERROR_MESSAGE = "Login failed, please try again later."
         private const val REGISTER_ERROR_MESSAGE = "Register failed, please try again later."
-
-        @Volatile
-        private var instance: UserRepository? = null
-
-        fun getInstance(apiService: ApiService) =
-            instance ?: synchronized(this) {
-                instance ?: UserRepository(apiService)
-            }.also { instance = it }
     }
 }

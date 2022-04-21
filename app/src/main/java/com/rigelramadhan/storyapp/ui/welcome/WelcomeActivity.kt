@@ -1,6 +1,5 @@
 package com.rigelramadhan.storyapp.ui.welcome
 
-import android.content.Context
 import android.content.Intent
 import android.os.Build
 import android.os.Bundle
@@ -8,23 +7,18 @@ import android.view.WindowInsets
 import android.view.WindowManager
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.preferencesDataStore
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.databinding.ActivityWelcomeBinding
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
+import dagger.hilt.android.AndroidEntryPoint
 
-private val Context.dataStore: DataStore<Preferences> by preferencesDataStore(name = "token")
+@AndroidEntryPoint
 class WelcomeActivity : AppCompatActivity() {
 
     private val binding: ActivityWelcomeBinding by lazy {
         ActivityWelcomeBinding.inflate(layoutInflater)
     }
 
-    private val welcomeViewModel: WelcomeViewModel by viewModels {
-        WelcomeViewModel.WelcomeViewModelFactory.getInstance(LoginPreferences.getInstance(dataStore))
-    }
+    private val welcomeViewModel: WelcomeViewModel by viewModels()
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
