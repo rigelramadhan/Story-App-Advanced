@@ -21,13 +21,14 @@ import com.rigelramadhan.storyapp.databinding.FragmentStoryMapBinding
 import com.rigelramadhan.storyapp.ui.detail.DetailActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class StoryMapFragment : Fragment() {
 
     private var _binding: FragmentStoryMapBinding? = null
     private val binding get() = _binding!!
 
-    private val storyMapViewModel: StoryMapViewModel by viewModels()
+    private val storyMapViewModel: StoryMapViewModel by viewModels {
+        StoryMapViewModel.StoryMapViewModelFactory.getInstance(requireContext())
+    }
 
     @SuppressLint("PotentialBehaviorOverride")
     private val callback = OnMapReadyCallback { googleMap ->

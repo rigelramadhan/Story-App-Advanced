@@ -1,26 +1,29 @@
 package com.rigelramadhan.storyapp.data.repository
 
-import androidx.lifecycle.*
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
+import androidx.lifecycle.asLiveData
+import androidx.lifecycle.liveData
 import com.rigelramadhan.storyapp.data.Result
 import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.data.remote.responses.LoginResponse
 import com.rigelramadhan.storyapp.data.remote.responses.RegisterResponse
 import com.rigelramadhan.storyapp.data.remote.retrofit.ApiService
-import javax.inject.Inject
-import javax.inject.Singleton
+import kotlinx.coroutines.CoroutineScope
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlin.coroutines.CoroutineContext
 
-@Singleton
-class UserRepository @Inject constructor(
+class UserRepository private constructor(
     private val apiService: ApiService,
     private val loginPreferences: LoginPreferences
-) {
+) : UserDataSource, CoroutineScope {
     private val loginResult = MutableLiveData<Result<LoginResponse>>()
     private val registerResult = MutableLiveData<Result<RegisterResponse>>()
 
-    fun getLoginResult(): LiveData<Result<LoginResponse>> = loginResult
-    fun getRegisterResult(): LiveData<Result<RegisterResponse>> = registerResult
+    override fun getRegisterResult(): LiveData<Result<RegisterResponse>> = registerResult
 
-    fun login(email: String, password: String): LiveData<Result<LoginResponse>> = liveData {
+    override fun login(email: String, password: String): LiveData<Result<LoginResponse>> = liveData {
         loginResult.postValue(Result.Loading)
         emit(Result.Loading)
         try {
@@ -41,7 +44,7 @@ class UserRepository @Inject constructor(
         }
     }
 
-    fun register(name: String, email: String, password: String) = liveData<Result<RegisterResponse>> {
+    override fun register(name: String, email: String, password: String) = liveData<Result<RegisterResponse>> {
         registerResult.value = Result.Loading
         try {
             val response = apiService.register(
@@ -59,20 +62,44 @@ class UserRepository @Inject constructor(
         }
     }
 
-    fun getToken(): LiveData<String> = loginPreferences.getToken().asLiveData()
+    override fun getToken(): LiveData<String> = loginPreferences.getToken().asLiveData()
 
-    suspend fun deleteToken() = loginPreferences.deleteToken()
+    override fun deleteToken() {
+        launch(Dispatchers.IO) {
+            loginPreferences.deleteToken()
+        }
+    }
 
-    fun isFirstTime(): LiveData<Boolean> = loginPreferences.isFirstTime().asLiveData()
+    override fun isFirstTime(): LiveData<Boolean> = loginPreferences.isFirstTime().asLiveData()
 
-    suspend fun saveToken(token: String) = loginPreferences.saveToken(token)
+    override fun saveToken(token: String) {
+        launch(Dispatchers.IO) {
+            loginPreferences.saveToken(token)
+        }
+    }
 
-    suspend fun setFirstTime(firstTime: Boolean) = loginPreferences.setFirstTime(firstTime)
+    override fun setFirstTime(firstTime: Boolean) {
+        launch(Dispatchers.IO) {
+            loginPreferences.setFirstTime(firstTime)
+        }
+    }
 
 
     companion object {
         private val TAG = UserRepository::class.java.simpleName
         private const val LOGIN_ERROR_MESSAGE = "Login failed, please try again later."
         private const val REGISTER_ERROR_MESSAGE = "Register failed, please try again later."
+
+        @Volatile
+        private var instance: UserRepository? = null
+
+        fun getInstance(apiService: ApiService, loginPreferences: LoginPreferences) =
+            instance ?: synchronized(this) {
+                instance ?: UserRepository(apiService, loginPreferences)
+            }.also { instance = it }
     }
+
+    override val coroutineContext: CoroutineContext
+        get() = Dispatchers.Main
 }
+

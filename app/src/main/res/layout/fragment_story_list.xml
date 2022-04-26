@@ -38,4 +38,16 @@
         style="@style/Text"
         android:gravity="center"/>
 
+    <TextView
+        android:id="@+id/tv_error"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/failed_fetching_data"
+        app:layout_constraintTop_toTopOf="parent"
+        android:padding="4dp"
+        android:background="@color/blue"
+        android:visibility="invisible"
+        style="@style/Text.White"
+        android:gravity="center"/>
+
 </androidx.constraintlayout.widget.ConstraintLayout>

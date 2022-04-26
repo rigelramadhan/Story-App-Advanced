@@ -23,18 +23,18 @@ import com.rigelramadhan.storyapp.ui.main.MainActivity
 import com.rigelramadhan.storyapp.utils.AppExecutors
 import com.rigelramadhan.storyapp.utils.reduceFileImage
 import com.rigelramadhan.storyapp.utils.rotateBitmap
-import dagger.hilt.android.AndroidEntryPoint
 import java.io.File
 import java.io.FileOutputStream
 
-@AndroidEntryPoint
 class PostActivity : AppCompatActivity() {
 
     private val binding: ActivityPostBinding by lazy {
         ActivityPostBinding.inflate(layoutInflater)
     }
 
-    private val postViewModel: PostViewModel by viewModels()
+    private val postViewModel: PostViewModel by viewModels {
+        PostViewModel.PostViewModelFactory.getInstance(this)
+    }
 
     private val appExecutor: AppExecutors by lazy {
         AppExecutors()
@@ -65,7 +65,7 @@ class PostActivity : AppCompatActivity() {
     }
 
     private fun checkIfSessionValid() {
-        postViewModel.checkIfTokenAvailable().observe(this) {
+        postViewModel.getToken().observe(this) {
             if (it == "null") {
                 val intent = Intent(this, LoginActivity::class.java)
                 intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
@@ -76,7 +76,7 @@ class PostActivity : AppCompatActivity() {
 
     private fun setupButtons() {
         binding.btnPost.setOnClickListener {
-            postViewModel.checkIfTokenAvailable().observe(this) {
+            postViewModel.getToken().observe(this) {
                 if (reducingDone) {
                     if (it == "null") {
                         val intent = Intent(this, LoginActivity::class.java)

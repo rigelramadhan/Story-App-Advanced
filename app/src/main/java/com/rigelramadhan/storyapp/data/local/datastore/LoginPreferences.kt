@@ -10,8 +10,7 @@ import kotlinx.coroutines.flow.map
 import javax.inject.Inject
 import javax.inject.Singleton
 
-@Singleton
-class LoginPreferences @Inject constructor(private val dataStore: DataStore<Preferences>) {
+class LoginPreferences (private val dataStore: DataStore<Preferences>) {
 
     private val token = stringPreferencesKey("token")
     private val firstTime = booleanPreferencesKey("first_time")
@@ -44,5 +43,15 @@ class LoginPreferences @Inject constructor(private val dataStore: DataStore<Pref
         dataStore.edit {
             it[token] = "null"
         }
+    }
+
+    companion object {
+        @Volatile
+        private var instance: LoginPreferences? = null
+
+        fun getInstance(dataStore: DataStore<Preferences>): LoginPreferences =
+            instance ?: synchronized(this) {
+                instance ?: LoginPreferences(dataStore)
+            }.also { instance = it }
     }
 }

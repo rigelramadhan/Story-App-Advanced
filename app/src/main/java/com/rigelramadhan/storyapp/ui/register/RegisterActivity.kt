@@ -12,14 +12,15 @@ import com.rigelramadhan.storyapp.databinding.ActivityRegisterBinding
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class RegisterActivity : AppCompatActivity() {
 
     private val binding: ActivityRegisterBinding by lazy {
         ActivityRegisterBinding.inflate(layoutInflater)
     }
 
-    private val registerViewModel: RegisterViewModel by viewModels()
+    private val registerViewModel: RegisterViewModel by viewModels {
+        RegisterViewModel.RegisterViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

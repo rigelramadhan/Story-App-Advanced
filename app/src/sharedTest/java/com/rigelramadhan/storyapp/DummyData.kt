@@ -50,6 +50,14 @@ object DummyData {
         )
     }
 
+    fun generateDummyErrorLoginResponse(): LoginResponse {
+        return LoginResponse(
+            LoginResult(""),
+            true,
+            "Invalid password"
+        )
+    }
+
     fun generateDummyRegisterResponse(): RegisterResponse {
         return RegisterResponse(
             false,

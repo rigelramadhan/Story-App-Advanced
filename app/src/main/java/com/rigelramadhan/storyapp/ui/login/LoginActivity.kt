@@ -15,14 +15,15 @@ import com.rigelramadhan.storyapp.ui.register.RegisterActivity
 import com.rigelramadhan.storyapp.ui.welcome.WelcomeActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class LoginActivity : AppCompatActivity() {
 
     private val binding: ActivityLoginBinding by lazy {
         ActivityLoginBinding.inflate(layoutInflater)
     }
 
-    private val loginViewModel: LoginViewModel by viewModels()
+    private val loginViewModel: LoginViewModel by viewModels {
+        LoginViewModel.LoginViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
@@ -49,30 +50,6 @@ class LoginActivity : AppCompatActivity() {
 
     private fun setupView() {
         supportActionBar?.setDisplayShowHomeEnabled(true)
-
-//        loginViewModel.getLoginResult().observe(this) {
-//            when (it) {
-//                is Result.Loading -> {
-//                    binding.progressBar.visibility = View.VISIBLE
-//                }
-//
-//                is Result.Error -> {
-//                    binding.progressBar.visibility = View.INVISIBLE
-//                    val error = it.error
-//                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-//                }
-//
-//                is Result.Success -> {
-//                    binding.progressBar.visibility = View.INVISIBLE
-//                    val data = it.data
-//                    loginViewModel.saveToken(data.loginResult.token)
-//                    Log.d("LoginActivity", "Token: ${data.loginResult.token}")
-//                    val intent = Intent(this, MainActivity::class.java)
-//                    startActivity(intent)
-//                    finish()
-//                }
-//            }
-//        }
 
         binding.btnLogin.setOnClickListener {
             if (!binding.etLayoutEmail.text.isNullOrEmpty() && !binding.etLayoutPassword.text.isNullOrEmpty()) {

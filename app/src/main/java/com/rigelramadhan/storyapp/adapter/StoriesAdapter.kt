@@ -1,6 +1,7 @@
 package com.rigelramadhan.storyapp.adapter
 
 import android.app.Activity
+import android.content.Context
 import android.content.Intent
 import android.view.LayoutInflater
 import android.view.ViewGroup
@@ -14,7 +15,7 @@ import com.rigelramadhan.storyapp.data.remote.responses.StoryEntity
 import com.rigelramadhan.storyapp.databinding.ItemPostBinding
 import com.rigelramadhan.storyapp.ui.detail.DetailActivity
 
-class StoriesAdapter :
+class StoriesAdapter(private val context: Context) :
     PagingDataAdapter<StoryEntity, StoriesAdapter.ViewHolder>(StoryDiffCallback) {
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ViewHolder {
         val binding = ItemPostBinding.inflate(LayoutInflater.from(parent.context), parent, false)
@@ -31,7 +32,7 @@ class StoriesAdapter :
 
             val optionsCompat: ActivityOptionsCompat =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(
-                    holder.itemView.context as Activity,
+                    context as Activity,
                     Pair(holder.binding.imgPost, "picture"),
                     Pair(holder.binding.tvCaption, "description")
                 )

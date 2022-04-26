@@ -17,16 +17,18 @@ import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.adapter.SectionPageAdapter
 import com.rigelramadhan.storyapp.databinding.ActivityMainBinding
 import com.rigelramadhan.storyapp.ui.camera.CameraActivity
+import com.rigelramadhan.storyapp.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class MainActivity : AppCompatActivity() {
 
     private val binding: ActivityMainBinding by lazy {
         ActivityMainBinding.inflate(layoutInflater)
     }
 
-    private val mainViewModel: MainViewModel by viewModels()
+    private val mainViewModel: MainViewModel by viewModels {
+        MainViewModel.MainViewModelFactory.getInstance(this)
+    }
     private lateinit var viewPager: ViewPager2
     private var isList = true
 
@@ -36,6 +38,22 @@ class MainActivity : AppCompatActivity() {
 
         setupFragment()
         setupButtons()
+    }
+
+    override fun onResume() {
+        super.onResume()
+        checkIfSessionValid()
+    }
+
+    private fun checkIfSessionValid() {
+        mainViewModel.checkIfTokenAvailable().observe(this) {
+            if (it == "null") {
+                val intent = Intent(this, LoginActivity::class.java)
+                intent.flags = Intent.FLAG_ACTIVITY_NEW_TASK or Intent.FLAG_ACTIVITY_CLEAR_TASK
+                startActivity(intent)
+                finish()
+            }
+        }
     }
 
     private fun setupFragment() {

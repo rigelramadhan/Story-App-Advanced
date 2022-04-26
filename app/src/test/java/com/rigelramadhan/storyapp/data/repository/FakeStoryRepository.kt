@@ -16,15 +16,13 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody.Companion.asRequestBody
 import okhttp3.RequestBody.Companion.toRequestBody
 import java.io.File
-import javax.inject.Inject
-import javax.inject.Singleton
 
-class StoryRepository (
+class FakeStoryRepository(
     private val apiService: ApiService,
     private val database: StoryDatabase
-) : StoryDataSource {
+) {
     @OptIn(ExperimentalPagingApi::class)
-    override fun getStories(token: String): LiveData<PagingData<StoryEntity>> {
+    fun getStories(token: String): LiveData<PagingData<StoryEntity>> {
         val pagingSourceFactory = { database.storyDao().getStories() }
 
         return Pager(
@@ -40,7 +38,7 @@ class StoryRepository (
         ).liveData
     }
 
-    override fun getStoriesWithLocation(token: String): LiveData<Result<List<StoryEntity>>> =
+    fun getStoriesWithLocation(token: String): LiveData<Result<List<StoryEntity>>> =
         liveData {
             emit(Result.Loading)
             try {
@@ -56,7 +54,7 @@ class StoryRepository (
             }
         }
 
-    override fun postStory(
+    fun postStory(
         token: String,
         imageFile: File,
         description: String,
@@ -96,19 +94,4 @@ class StoryRepository (
         }
     }
 
-    companion object {
-        private val TAG = StoryRepository::class.java.simpleName
-        private const val POST_ERROR_MESSAGE = "Story was not posted, please try again later."
-
-        @Volatile
-        private var instance: StoryRepository? = null
-
-        fun getInstance(
-            apiService: ApiService,
-            database: StoryDatabase
-        ): StoryRepository =
-            instance ?: synchronized(this) {
-                instance ?: StoryRepository(apiService, database)
-            }.also { instance = it }
-    }
 }

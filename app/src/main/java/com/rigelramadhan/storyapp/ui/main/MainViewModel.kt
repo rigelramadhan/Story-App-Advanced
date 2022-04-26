@@ -1,20 +1,14 @@
 package com.rigelramadhan.storyapp.ui.main
 
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.ViewModel
-import androidx.lifecycle.asLiveData
-import androidx.lifecycle.viewModelScope
-import androidx.paging.ExperimentalPagingApi
+import android.content.Context
+import androidx.lifecycle.*
 import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
-import com.rigelramadhan.storyapp.data.repository.StoryRepository
 import com.rigelramadhan.storyapp.data.repository.UserRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.rigelramadhan.storyapp.di.AppModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
 
-@HiltViewModel
-class MainViewModel @Inject constructor(
+class MainViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
     fun checkIfTokenAvailable(): LiveData<String> {
@@ -22,8 +16,32 @@ class MainViewModel @Inject constructor(
     }
 
     fun logout() {
-        viewModelScope.launch(Dispatchers.IO) {
-            userRepository.deleteToken()
+        userRepository.deleteToken()
+    }
+
+    class MainViewModelFactory private constructor(
+        private val userRepository: UserRepository
+    ) : ViewModelProvider.NewInstanceFactory() {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(MainViewModel::class.java)) {
+                return MainViewModel(userRepository) as T
+            }
+
+            throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        }
+
+        companion object {
+            @Volatile
+            private var instance: MainViewModelFactory? = null
+
+            fun getInstance(
+                context: Context
+            ): MainViewModelFactory = instance ?: synchronized(this) {
+                instance ?: MainViewModelFactory(
+                    AppModule.provideUserRepository(context)
+                )
+            }.also { instance = it }
         }
     }
 }

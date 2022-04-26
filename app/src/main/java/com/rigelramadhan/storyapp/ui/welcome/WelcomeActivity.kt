@@ -11,14 +11,15 @@ import com.rigelramadhan.storyapp.databinding.ActivityWelcomeBinding
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
 import dagger.hilt.android.AndroidEntryPoint
 
-@AndroidEntryPoint
 class WelcomeActivity : AppCompatActivity() {
 
     private val binding: ActivityWelcomeBinding by lazy {
         ActivityWelcomeBinding.inflate(layoutInflater)
     }
 
-    private val welcomeViewModel: WelcomeViewModel by viewModels()
+    private val welcomeViewModel: WelcomeViewModel by viewModels {
+        WelcomeViewModel.WelcomeViewModelFactory.getInstance(this)
+    }
 
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)

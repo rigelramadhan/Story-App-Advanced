@@ -1,28 +1,31 @@
 package com.rigelramadhan.storyapp.ui.main
 
 import android.os.Bundle
+import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
+import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
+import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.adapter.StoriesAdapter
 import com.rigelramadhan.storyapp.adapter.StoryLoadingStateAdapter
 import com.rigelramadhan.storyapp.databinding.FragmentStoryListBinding
 import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
-@AndroidEntryPoint
 class StoryListFragment : Fragment() {
 
     private var _binding: FragmentStoryListBinding? = null
     private val binding get() = _binding!!
 
-    private val adapter = StoriesAdapter()
+    private lateinit var adapter: StoriesAdapter
 
     override fun onCreateView(
         inflater: LayoutInflater, container: ViewGroup?,
@@ -34,20 +37,16 @@ class StoryListFragment : Fragment() {
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
-        val viewModel: StoryListViewModel by viewModels()
-        setupData(viewModel)
-        setupView(viewModel)
-    }
-
-    private fun setupView(viewModel: StoryListViewModel) {
+        val viewModel: StoryListViewModel by viewModels {
+            StoryListViewModel.StoryListViewModelFactory.getInstance(requireContext())
+        }
         setupAdapter()
-    }
-
-    override fun onResume() {
-        super.onResume()
+        setupData(viewModel)
     }
 
     private fun setupAdapter() {
+        adapter = StoriesAdapter(requireActivity())
+
         binding.rvStories.apply {
             adapter = this@StoryListFragment.adapter.withLoadStateFooter(
                 footer = StoryLoadingStateAdapter {
@@ -57,6 +56,12 @@ class StoryListFragment : Fragment() {
 
             layoutManager = LinearLayoutManager(requireActivity())
             setHasFixedSize(true)
+        }
+
+        binding.swipeLayout.setOnRefreshListener {
+            binding.tvError.visibility = View.INVISIBLE
+            adapter.retry()
+            adapter.refresh()
         }
 
         adapter.addLoadStateListener { loadState ->
@@ -79,9 +84,13 @@ class StoryListFragment : Fragment() {
 
                 error?.let {
                     if (adapter.snapshot().isEmpty()) {
-                        binding.tvNoStory.visibility = View.VISIBLE
-                        binding.tvNoStory.text = it.error.localizedMessage
+                        Toast.makeText(
+                            requireContext(),
+                            getString(R.string.failed_fetching_data),
+                            Toast.LENGTH_SHORT
+                        ).show()
                     }
+                    binding.tvError.visibility = View.VISIBLE
                 }
             }
         }

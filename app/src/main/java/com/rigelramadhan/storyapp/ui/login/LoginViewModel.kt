@@ -1,29 +1,52 @@
 package com.rigelramadhan.storyapp.ui.login
 
-import androidx.lifecycle.*
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
+import android.content.Context
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
+import androidx.lifecycle.viewModelScope
 import com.rigelramadhan.storyapp.data.repository.UserRepository
-import dagger.hilt.android.lifecycle.HiltViewModel
+import com.rigelramadhan.storyapp.di.AppModule
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
-import javax.inject.Inject
-import javax.inject.Singleton
 
-@HiltViewModel
-class LoginViewModel @Inject constructor(
+class LoginViewModel(
     private val userRepository: UserRepository
 ) : ViewModel() {
     fun login(email: String, password: String) = userRepository.login(email, password)
 
-    fun getLoginResult() = userRepository.getLoginResult()
-
     fun saveToken(token: String) {
-        viewModelScope.launch(Dispatchers.IO) {
-            userRepository.saveToken(token)
-        }
+        userRepository.saveToken(token)
     }
 
     fun checkIfFirstTime(): LiveData<Boolean> {
         return userRepository.isFirstTime()
+    }
+
+    class LoginViewModelFactory private constructor(
+        private val userRepository: UserRepository
+    ) :
+        ViewModelProvider.NewInstanceFactory() {
+        @Suppress("UNCHECKED_CAST")
+        override fun <T : ViewModel> create(modelClass: Class<T>): T {
+            if (modelClass.isAssignableFrom(LoginViewModel::class.java)) {
+                return LoginViewModel(userRepository) as T
+            }
+
+            throw IllegalArgumentException("Unknown ViewModel class: ${modelClass.name}")
+        }
+
+        companion object {
+            @Volatile
+            private var instance: LoginViewModelFactory? = null
+            fun getInstance(
+                context: Context
+            ): LoginViewModelFactory =
+                instance ?: synchronized(this) {
+                    instance ?: LoginViewModelFactory(
+                        AppModule.provideUserRepository(context)
+                    )
+                }
+        }
     }
 }
