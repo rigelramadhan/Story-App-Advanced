@@ -66,4 +66,10 @@
     <string name="expand_description">Expand description</string>
     <string name="expand_image">Expand image</string>
     <string name="retry">Retry</string>
+    <string name="stories_map">Stories Map</string>
+    <string name="title_activity_story_map">StoryMapActivity</string>
+    <string name="label_story_map">Story Map</string>
+    <string name="story_map_title">Story by %s - Click to see story</string>
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
 </resources>

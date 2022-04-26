@@ -11,21 +11,19 @@ import javax.inject.Singleton
 
 @HiltViewModel
 class LoginViewModel @Inject constructor(
-    private val userRepository: UserRepository,
-    private val loginPreferences: LoginPreferences
+    private val userRepository: UserRepository
 ) : ViewModel() {
     fun login(email: String, password: String) = userRepository.login(email, password)
 
-    fun register(name: String, email: String, password: String) =
-        userRepository.register(name, email, password)
+    fun getLoginResult() = userRepository.getLoginResult()
 
     fun saveToken(token: String) {
         viewModelScope.launch(Dispatchers.IO) {
-            loginPreferences.saveToken(token)
+            userRepository.saveToken(token)
         }
     }
 
     fun checkIfFirstTime(): LiveData<Boolean> {
-        return loginPreferences.isFirstTime().asLiveData()
+        return userRepository.isFirstTime()
     }
 }

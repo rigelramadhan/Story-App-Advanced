@@ -1,97 +1,74 @@
 package com.rigelramadhan.storyapp.data.repository
 
-import android.util.Log
-import androidx.lifecycle.LiveData
-import androidx.lifecycle.MediatorLiveData
+import androidx.lifecycle.*
 import com.rigelramadhan.storyapp.data.Result
+import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.data.remote.responses.LoginResponse
 import com.rigelramadhan.storyapp.data.remote.responses.RegisterResponse
 import com.rigelramadhan.storyapp.data.remote.retrofit.ApiService
-import retrofit2.Call
-import retrofit2.Callback
-import retrofit2.Response
 import javax.inject.Inject
 import javax.inject.Singleton
 
 @Singleton
 class UserRepository @Inject constructor(
-    private val apiService: ApiService
+    private val apiService: ApiService,
+    private val loginPreferences: LoginPreferences
 ) {
-    private val loginResult = MediatorLiveData<Result<LoginResponse>>()
-    private val registerResult = MediatorLiveData<Result<RegisterResponse>>()
+    private val loginResult = MutableLiveData<Result<LoginResponse>>()
+    private val registerResult = MutableLiveData<Result<RegisterResponse>>()
 
-    fun login(email: String, password: String): LiveData<Result<LoginResponse>> {
-        loginResult.value = Result.Loading
-        val client = apiService.login(
-            email,
-            password
-        )
+    fun getLoginResult(): LiveData<Result<LoginResponse>> = loginResult
+    fun getRegisterResult(): LiveData<Result<RegisterResponse>> = registerResult
 
-        client.enqueue(object : Callback<LoginResponse> {
-            override fun onResponse(call: Call<LoginResponse>, response: Response<LoginResponse>) {
-                if (response.isSuccessful) {
-                    val loginInfo = response.body()
-                    if (loginInfo != null) {
-                        loginResult.value = Result.Success(loginInfo)
-                    } else {
-                        loginResult.value = Result.Error(LOGIN_ERROR_MESSAGE)
-                        Log.e(TAG, "Failed: Login Info is null")
-                    }
-                } else {
-                    loginResult.value = Result.Error(LOGIN_ERROR_MESSAGE)
-                    Log.e(TAG, "Failed: Response Unsuccessful - ${response.message()}")
-                }
+    fun login(email: String, password: String): LiveData<Result<LoginResponse>> = liveData {
+        loginResult.postValue(Result.Loading)
+        emit(Result.Loading)
+        try {
+            val response = apiService.login(
+                email,
+                password
+            )
+            if (response.error) {
+                loginResult.postValue(Result.Error(response.message))
+                emit(Result.Error(response.message))
+            } else {
+                loginResult.postValue(Result.Success(response))
+                emit(Result.Success(response))
             }
-
-            override fun onFailure(call: Call<LoginResponse>, t: Throwable) {
-                loginResult.value = Result.Error(LOGIN_ERROR_MESSAGE)
-                Log.e(TAG, "Failed: Response Failure - ${t.message.toString()}")
-            }
-        })
-
-        return loginResult
+        } catch (e: Exception) {
+            loginResult.postValue(Result.Error(e.message.toString()))
+            emit(Result.Error(e.message.toString()))
+        }
     }
 
-    fun register(
-        name: String,
-        email: String,
-        password: String
-    ): LiveData<Result<RegisterResponse>> {
+    fun register(name: String, email: String, password: String) = liveData<Result<RegisterResponse>> {
         registerResult.value = Result.Loading
-        val client = apiService.register(
-            name,
-            email,
-            password
-        )
-
-        client.enqueue(object : Callback<RegisterResponse> {
-            override fun onResponse(
-                call: Call<RegisterResponse>,
-                response: Response<RegisterResponse>
-            ) {
-                if (response.isSuccessful) {
-                    val registerInfo = response.body()
-                    if (registerInfo != null) {
-                        registerResult.value = Result.Success(registerInfo)
-                    } else {
-                        registerResult.value = Result.Error(REGISTER_ERROR_MESSAGE)
-                        Log.e(TAG, "Failed: Register Info is null")
-                    }
-                } else {
-                    registerResult.value = Result.Error(REGISTER_ERROR_MESSAGE)
-                    Log.e(TAG, "Failed: Response Unsuccessful - ${response.message()}")
-                }
+        try {
+            val response = apiService.register(
+                name,
+                email,
+                password
+            )
+            if (response.error) {
+                registerResult.value = Result.Error(response.message)
+            } else {
+                registerResult.value = Result.Success(response)
             }
-
-            override fun onFailure(call: Call<RegisterResponse>, t: Throwable) {
-                registerResult.value = Result.Error(REGISTER_ERROR_MESSAGE)
-                Log.e(TAG, "Failed: Response Failure - ${t.message.toString()}")
-            }
-
-        })
-
-        return registerResult
+        } catch (e: Exception) {
+            registerResult.value = Result.Error(e.message.toString())
+        }
     }
+
+    fun getToken(): LiveData<String> = loginPreferences.getToken().asLiveData()
+
+    suspend fun deleteToken() = loginPreferences.deleteToken()
+
+    fun isFirstTime(): LiveData<Boolean> = loginPreferences.isFirstTime().asLiveData()
+
+    suspend fun saveToken(token: String) = loginPreferences.saveToken(token)
+
+    suspend fun setFirstTime(firstTime: Boolean) = loginPreferences.setFirstTime(firstTime)
+
 
     companion object {
         private val TAG = UserRepository::class.java.simpleName

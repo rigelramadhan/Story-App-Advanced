@@ -1,13 +1,20 @@
 package com.rigelramadhan.storyapp.ui.post
 
+import android.Manifest
 import android.content.Intent
+import android.content.pm.PackageManager
 import android.graphics.Bitmap
 import android.graphics.BitmapFactory
+import android.location.Location
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
+import androidx.activity.result.contract.ActivityResultContracts
 import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
+import androidx.core.content.ContextCompat
+import com.google.android.gms.location.FusedLocationProviderClient
+import com.google.android.gms.location.LocationServices
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.data.Result
 import com.rigelramadhan.storyapp.databinding.ActivityPostBinding
@@ -33,6 +40,9 @@ class PostActivity : AppCompatActivity() {
         AppExecutors()
     }
 
+    private lateinit var fusedLocationClient: FusedLocationProviderClient
+
+    private var location: Location? = null
     private var file: File? = null
     private var isBack: Boolean = true
     private var reducingDone: Boolean = false
@@ -40,9 +50,11 @@ class PostActivity : AppCompatActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(binding.root)
-        supportActionBar?.title = getString(R.string.post)
+
         supportActionBar?.setDisplayShowHomeEnabled(true)
 
+        fusedLocationClient = LocationServices.getFusedLocationProviderClient(this)
+        getLastLocation()
         bindResult()
         setupButtons()
     }
@@ -73,7 +85,11 @@ class PostActivity : AppCompatActivity() {
                         uploadImage("Bearer $it")
                     }
                 } else {
-                    Toast.makeText(this, getString(R.string.wait_for_processing), Toast.LENGTH_SHORT).show()
+                    Toast.makeText(
+                        this,
+                        getString(R.string.wait_for_processing),
+                        Toast.LENGTH_SHORT
+                    ).show()
                 }
             }
         }
@@ -97,12 +113,21 @@ class PostActivity : AppCompatActivity() {
 
     private fun uploadImage(token: String) {
         if (binding.etDescription.text.isNullOrEmpty()) {
-            Toast.makeText(this, getString(R.string.description_cannot_empty), Toast.LENGTH_SHORT).show()
+            Toast.makeText(this, getString(R.string.description_cannot_empty), Toast.LENGTH_SHORT)
+                .show()
         } else {
             if (file != null) {
                 binding.progressBar.visibility = View.VISIBLE
                 val description = binding.etDescription.text.toString()
-                val result = postViewModel.postStory(token, file as File, description)
+
+                val result = postViewModel.postStory(
+                    token,
+                    file as File,
+                    description,
+                    location?.latitude?.toFloat(),
+                    location?.longitude?.toFloat()
+                )
+
                 result.observe(this) {
                     when (it) {
                         is Result.Loading -> {
@@ -117,7 +142,11 @@ class PostActivity : AppCompatActivity() {
 
                         is Result.Success -> {
                             binding.progressBar.visibility = View.INVISIBLE
-                            Toast.makeText(this, getString(R.string.image_posted), Toast.LENGTH_SHORT)
+                            Toast.makeText(
+                                this,
+                                getString(R.string.image_posted),
+                                Toast.LENGTH_SHORT
+                            )
                                 .show()
                             val intent = Intent(this, MainActivity::class.java)
                             startActivity(intent)
@@ -127,6 +156,42 @@ class PostActivity : AppCompatActivity() {
                 }
             }
         }
+    }
+
+    private val requestPermissionLauncher =
+        registerForActivityResult(
+            ActivityResultContracts.RequestMultiplePermissions()
+        ) { permissions ->
+            when {
+                permissions[Manifest.permission.ACCESS_FINE_LOCATION] ?: false -> {
+                    getLastLocation()
+                }
+                permissions[Manifest.permission.ACCESS_COARSE_LOCATION] ?: false -> {
+                    getLastLocation()
+                }
+            }
+        }
+
+    private fun getLastLocation() {
+        if (checkPermission(Manifest.permission.ACCESS_FINE_LOCATION) && checkPermission(Manifest.permission.ACCESS_COARSE_LOCATION)) {
+            fusedLocationClient.lastLocation.addOnSuccessListener { location ->
+                this.location = location
+            }
+        } else {
+            requestPermissionLauncher.launch(
+                arrayOf(
+                    Manifest.permission.ACCESS_FINE_LOCATION,
+                    Manifest.permission.ACCESS_COARSE_LOCATION
+                )
+            )
+        }
+    }
+
+    private fun checkPermission(permission: String): Boolean {
+        return ContextCompat.checkSelfPermission(
+            this,
+            permission
+        ) == PackageManager.PERMISSION_GRANTED
     }
 
     companion object {

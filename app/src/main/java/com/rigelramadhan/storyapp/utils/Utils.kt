@@ -6,7 +6,9 @@ import android.graphics.Bitmap
 import android.graphics.BitmapFactory
 import android.graphics.Matrix
 import android.os.Environment
+import com.google.android.gms.maps.model.MarkerOptions
 import com.rigelramadhan.storyapp.R
+import com.rigelramadhan.storyapp.data.remote.responses.StoryEntity
 import java.io.ByteArrayOutputStream
 import java.io.File
 import java.io.FileOutputStream

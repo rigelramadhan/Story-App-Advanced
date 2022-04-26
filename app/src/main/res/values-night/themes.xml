@@ -37,6 +37,10 @@
         <item name="android:textSize">16sp</item>
     </style>
 
+    <style name="Text.Title.Black">
+        <item name="android:textColor">@color/black</item>
+    </style>
+
     <style name="Text.Caption">
         <item name="android:textColor">@color/text_white_transparent</item>
     </style>

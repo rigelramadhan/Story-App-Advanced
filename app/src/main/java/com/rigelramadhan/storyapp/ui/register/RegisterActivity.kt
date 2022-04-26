@@ -29,34 +29,35 @@ class RegisterActivity : AppCompatActivity() {
     }
 
     private fun setupView() {
-        supportActionBar?.title = getString(R.string.register)
         supportActionBar?.setDisplayShowHomeEnabled(true)
+
+        registerViewModel.getRegisterResult().observe(this) {
+            when (it) {
+                is Result.Loading -> {
+                    binding.progressBar.visibility = View.VISIBLE
+                }
+
+                is Result.Error -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    val error = it.error
+                    Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
+                }
+
+                is Result.Success -> {
+                    binding.progressBar.visibility = View.INVISIBLE
+                    Toast.makeText(this, getString(R.string.register_successful), Toast.LENGTH_SHORT).show()
+                    val intent = Intent(this, LoginActivity::class.java)
+                    startActivity(intent)
+                }
+            }
+        }
+
         binding.btnRegister.setOnClickListener {
             val name = binding.etLayoutName.text
             val email = binding.etLayoutEmail.text
             val password = binding.etLayoutPassword.text
             if (!name.isNullOrEmpty() && !email.isNullOrEmpty() && !password.isNullOrEmpty()) {
-                val result = registerViewModel.registerUser(name.toString(), email.toString(), password.toString())
-                result.observe(this) {
-                    when (it) {
-                        is Result.Loading -> {
-                            binding.progressBar.visibility = View.VISIBLE
-                        }
-
-                        is Result.Error -> {
-                            binding.progressBar.visibility = View.INVISIBLE
-                            val error = it.error
-                            Toast.makeText(this, error, Toast.LENGTH_SHORT).show()
-                        }
-
-                        is Result.Success -> {
-                            binding.progressBar.visibility = View.INVISIBLE
-                            Toast.makeText(this, getString(R.string.register_successful), Toast.LENGTH_SHORT).show()
-                            val intent = Intent(this, LoginActivity::class.java)
-                            startActivity(intent)
-                        }
-                    }
-                }
+                registerViewModel.registerUser(name.toString(), email.toString(), password.toString())
             } else {
                 if (name.isNullOrEmpty()) binding.etLayoutName.error = getString(R.string.name_cannot_empty)
                 if (email.isNullOrEmpty()) binding.etLayoutEmail.error = getString(R.string.email_cannot_empty)

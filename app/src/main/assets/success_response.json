@@ -1,0 +1,96 @@
+{
+  "error": false,
+  "message": "Stories fetched successfully",
+  "listStory": [
+    {
+      "id": "story-pVCEsdrit7m7Y8bZ",
+      "name": "tehyung",
+      "description": "ngge",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650932046186_HfDVpiTH.jpg",
+      "createdAt": "2022-04-26T00:14:06.187Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-jO8YdTUjmkpP6pYr",
+      "name": "rizky siregar",
+      "description": "yuhuuuuu",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650932012150_4aa2q1UK.jpg",
+      "createdAt": "2022-04-26T00:13:32.151Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-FJb0CkYjdKO-UNSn",
+      "name": "tehyung",
+      "description": "ga",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931990843_B1C9-M5G.jpg",
+      "createdAt": "2022-04-26T00:13:10.844Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-eJTikEAsCgPx93F3",
+      "name": "nrap21",
+      "description": "Mantappp betul nih",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931829511_oXA4SrBK.jpg",
+      "createdAt": "2022-04-26T00:10:29.515Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-CSgbs1-48_txQLP3",
+      "name": "tehyung",
+      "description": "y",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931743677_aOjt9c86.jpg",
+      "createdAt": "2022-04-26T00:09:03.678Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-UXqSuShnyC1Hfjw1",
+      "name": "Reisalin",
+      "description": ",",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931603284_WDArbP2i.jpg",
+      "createdAt": "2022-04-26T00:06:43.285Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-9eGl9XQGMo-Jfoh6",
+      "name": "yanto",
+      "description": "sadas",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931596659_K6ayFu3X.jpg",
+      "createdAt": "2022-04-26T00:06:36.660Z",
+      "lat": -5.423423423423423,
+      "lon": 105.26401680211835
+    },
+    {
+      "id": "story-QJZjyy7hNAyPHE8X",
+      "name": "patin",
+      "description": "hahaha",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931508208_n921KtiE.jpg",
+      "createdAt": "2022-04-26T00:05:08.211Z",
+      "lat": -7.4776167,
+      "lon": 111.1379867
+    },
+    {
+      "id": "story-B1NU3jrRgja48cQe",
+      "name": "Reisalin",
+      "description": ".",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931458451_bwyiGsZf.jpg",
+      "createdAt": "2022-04-26T00:04:18.452Z",
+      "lat": null,
+      "lon": null
+    },
+    {
+      "id": "story-BA_1PTIuWSJAF2jN",
+      "name": "Reisalin",
+      "description": ".",
+      "photoUrl": "https://story-api.dicoding.dev/images/stories/photos-1650931415781_aQcv26AH.jpg",
+      "createdAt": "2022-04-26T00:03:35.782Z",
+      "lat": null,
+      "lon": null
+    }
+  ]
+}

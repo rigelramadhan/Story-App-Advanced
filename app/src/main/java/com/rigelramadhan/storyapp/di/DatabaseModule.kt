@@ -1,6 +1,7 @@
 package com.rigelramadhan.storyapp.di
 
 import android.content.Context
+import com.rigelramadhan.storyapp.data.local.room.StoryDao
 import com.rigelramadhan.storyapp.data.local.room.StoryDatabase
 import dagger.Module
 import dagger.Provides
@@ -16,5 +17,11 @@ object DatabaseModule {
     @Provides
     fun provideDatabase(@ApplicationContext context: Context): StoryDatabase {
         return StoryDatabase.getInstance(context)
+    }
+
+    @Singleton
+    @Provides
+    fun provideStoryDao(storyDatabase: StoryDatabase): StoryDao {
+        return storyDatabase.storyDao()
     }
 }

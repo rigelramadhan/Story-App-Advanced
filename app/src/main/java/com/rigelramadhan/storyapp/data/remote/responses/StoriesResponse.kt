@@ -1,11 +1,15 @@
 package com.rigelramadhan.storyapp.data.remote.responses
 
+import android.os.Parcelable
+import androidx.room.Entity
+import androidx.room.PrimaryKey
 import com.google.gson.annotations.SerializedName
+import kotlinx.parcelize.Parcelize
 
 data class StoriesResponse(
 
 	@field:SerializedName("listStory")
-	val listStory: List<ListStoryItem>,
+	val story: List<StoryEntity>,
 
 	@field:SerializedName("error")
 	val error: Boolean,
@@ -14,7 +18,9 @@ data class StoriesResponse(
 	val message: String
 )
 
-data class ListStoryItem(
+@Parcelize
+@Entity(tableName = "story")
+data class StoryEntity(
 
 	@field:SerializedName("photoUrl")
 	val photoUrl: String,
@@ -31,9 +37,10 @@ data class ListStoryItem(
 	@field:SerializedName("lon")
 	val lon: Double,
 
+	@PrimaryKey
 	@field:SerializedName("id")
 	val id: String,
 
 	@field:SerializedName("lat")
 	val lat: Double
-)
+): Parcelable

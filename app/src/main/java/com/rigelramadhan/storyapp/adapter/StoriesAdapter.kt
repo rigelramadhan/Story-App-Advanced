@@ -10,7 +10,7 @@ import androidx.paging.PagingDataAdapter
 import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import com.bumptech.glide.Glide
-import com.rigelramadhan.storyapp.data.local.entity.StoryEntity
+import com.rigelramadhan.storyapp.data.remote.responses.StoryEntity
 import com.rigelramadhan.storyapp.databinding.ItemPostBinding
 import com.rigelramadhan.storyapp.ui.detail.DetailActivity
 
@@ -27,9 +27,7 @@ class StoriesAdapter :
 
         holder.binding.cardStory.setOnClickListener {
             val intent = Intent(holder.itemView.context, DetailActivity::class.java)
-            intent.putExtra(DetailActivity.NAME_EXTRA, story?.name)
-            intent.putExtra(DetailActivity.DESCRIPTION_EXTRA, story?.description)
-            intent.putExtra(DetailActivity.IMAGE_URL_EXTRA, story?.photoUrl)
+            intent.putExtra(DetailActivity.STORY_EXTRA, story)
 
             val optionsCompat: ActivityOptionsCompat =
                 ActivityOptionsCompat.makeSceneTransitionAnimation(

@@ -5,82 +5,92 @@ import androidx.paging.LoadType
 import androidx.paging.PagingState
 import androidx.paging.RemoteMediator
 import androidx.room.withTransaction
-import com.rigelramadhan.storyapp.data.ITEMS_PER_PAGE
-import com.rigelramadhan.storyapp.data.local.entity.StoryEntity
 import com.rigelramadhan.storyapp.data.local.entity.StoryRemoteKeys
 import com.rigelramadhan.storyapp.data.local.room.StoryDatabase
+import com.rigelramadhan.storyapp.data.remote.responses.StoryEntity
 import com.rigelramadhan.storyapp.data.remote.retrofit.ApiService
-import retrofit2.HttpException
-import java.io.IOException
+import com.rigelramadhan.storyapp.utils.wrapEspressoIdlingResource
 
-@ExperimentalPagingApi
+@OptIn(ExperimentalPagingApi::class)
 class StoryRemoteMediator(
     private val token: String,
     private val apiService: ApiService,
     private val database: StoryDatabase
 ) : RemoteMediator<Int, StoryEntity>() {
 
+    override suspend fun initialize(): InitializeAction {
+        return InitializeAction.LAUNCH_INITIAL_REFRESH
+    }
+
     override suspend fun load(
         loadType: LoadType,
         state: PagingState<Int, StoryEntity>
     ): MediatorResult {
-        val key = when (loadType) {
-            LoadType.REFRESH -> if (database.storyDao()
-                    .getCount() > 0
-            ) return MediatorResult.Success(false) else null
-            LoadType.PREPEND -> return MediatorResult.Success(true)
-            LoadType.APPEND -> database.storyRemoteKeysDao().getRemoteKeys()
+        val page = when (loadType) {
+            LoadType.REFRESH -> {
+                val remoteKeys = getRemoteKeyClosestToCurrentPosition(state)
+                remoteKeys?.nextPage?.minus(1) ?: INITIAL_PAGE_INDEX
+            }
+            LoadType.APPEND -> {
+                val remoteKeys = getRemoteKeyForLastItem(state)
+                remoteKeys?.nextPage
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+            }
+            LoadType.PREPEND -> {
+                val remoteKeys = getRemoteKeyForFirstItem(state)
+                remoteKeys?.prevPage
+                    ?: return MediatorResult.Success(endOfPaginationReached = remoteKeys != null)
+            }
         }
 
-        try {
-            if (key != null) {
-                if (key.nextPage == null) return MediatorResult.Success(true)
+        return try {
+            wrapEspressoIdlingResource {
+                val responseData = apiService.getStories(token, page, state.config.pageSize).story
+                val endOfPaginationReached = responseData.isEmpty()
+
+                database.withTransaction {
+                    if (loadType == LoadType.REFRESH) {
+                        database.storyRemoteKeysDao().deleteRemoteKeys()
+                        database.storyDao().deleteAllStories()
+                    }
+
+                    val prevPage = if (page == 1) null else page - 1
+                    val nextPage = if (endOfPaginationReached) null else page + 1
+                    val keys = responseData.map {
+                        StoryRemoteKeys(id = it.id, prevPage = prevPage, nextPage = nextPage)
+                    }
+
+                    database.storyRemoteKeysDao().addRemoteKeys(keys)
+                    database.storyDao().insertStories(responseData)
+                }
+                MediatorResult.Success(endOfPaginationReached = endOfPaginationReached)
             }
-
-            val page = key?.nextPage ?: 1
-            val response = apiService.getStories(token, page, ITEMS_PER_PAGE)
-            val storyList = response.listStory
-
-            val endOfPaginationReached = storyList.isEmpty()
-
-            database.withTransaction {
-                if (loadType == LoadType.REFRESH) {
-                    database.storyDao().deleteAllStories()
-                    database.storyRemoteKeysDao().deleteRemoteKeys()
-                }
-
-                val nextKey = if (endOfPaginationReached) null else page + 1
-                val prevKey = if (page == 1) null else page - 1
-
-                val keys = storyList.map {
-                    StoryRemoteKeys(
-                        it.id,
-                        prevKey,
-                        nextKey
-                    )
-                }
-
-                val stories = storyList.map {
-                    StoryEntity(
-                        it.photoUrl,
-                        it.createdAt,
-                        it.name,
-                        it.description,
-                        it.lon,
-                        it.id,
-                        it.lat
-                    )
-                }
-
-                database.storyRemoteKeysDao().addRemoteKeys(keys)
-                database.storyDao().insertStories(stories)
-            }
-
-            return  MediatorResult.Success(endOfPaginationReached)
-        } catch (e: IOException) {
-            return MediatorResult.Error(e)
-        } catch (e: HttpException) {
-            return MediatorResult.Error(e)
+        } catch (e: Exception) {
+            MediatorResult.Error(e)
         }
+    }
+
+    private suspend fun getRemoteKeyForLastItem(state: PagingState<Int, StoryEntity>): StoryRemoteKeys? {
+        return state.pages.lastOrNull { it.data.isNotEmpty() }?.data?.lastOrNull()?.let { data ->
+            database.storyRemoteKeysDao().getRemoteKeys(data.id)
+        }
+    }
+
+    private suspend fun getRemoteKeyForFirstItem(state: PagingState<Int, StoryEntity>): StoryRemoteKeys? {
+        return state.pages.firstOrNull { it.data.isNotEmpty() }?.data?.firstOrNull()?.let { data ->
+            database.storyRemoteKeysDao().getRemoteKeys(data.id)
+        }
+    }
+
+    private suspend fun getRemoteKeyClosestToCurrentPosition(state: PagingState<Int, StoryEntity>): StoryRemoteKeys? {
+        return state.anchorPosition?.let { position ->
+            state.closestItemToPosition(position)?.id?.let { id ->
+                database.storyRemoteKeysDao().getRemoteKeys(id)
+            }
+        }
+    }
+
+    private companion object {
+        const val INITIAL_PAGE_INDEX = 1
     }
 }

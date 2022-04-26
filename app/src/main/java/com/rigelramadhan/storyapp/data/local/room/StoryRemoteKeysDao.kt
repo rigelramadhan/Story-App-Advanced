@@ -10,10 +10,7 @@ import com.rigelramadhan.storyapp.data.local.entity.StoryRemoteKeys
 interface StoryRemoteKeysDao {
 
     @Query("SELECT * FROM story_remote_keys WHERE id = :id")
-    suspend fun getRemoteKeys(id: String): StoryRemoteKeys
-
-    @Query("SELECT * FROM story_remote_keys")
-    suspend fun getRemoteKeys(): StoryRemoteKeys
+    suspend fun getRemoteKeys(id: String): StoryRemoteKeys?
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun addRemoteKeys(remoteKeys: List<StoryRemoteKeys>)

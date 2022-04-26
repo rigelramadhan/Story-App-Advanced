@@ -4,6 +4,7 @@ import android.content.Context
 import android.text.Editable
 import android.text.TextWatcher
 import android.util.AttributeSet
+import androidx.core.widget.doOnTextChanged
 import com.rigelramadhan.storyapp.R
 
 class PasswordEditText : CustomEditText {
@@ -24,24 +25,14 @@ class PasswordEditText : CustomEditText {
     }
 
     private fun init() {
-        addTextChangedListener(object : TextWatcher {
-            override fun beforeTextChanged(s: CharSequence, start: Int, count: Int, after: Int) {
-
-            }
-
-            override fun onTextChanged(s: CharSequence, start: Int, before: Int, count: Int) {
-                if (!text.isNullOrBlank()) {
-                    error = if (text!!.length <= 6) {
-                        resources.getString(R.string.password_minimum)
-                    } else {
-                        null
-                    }
+        doOnTextChanged { text, _, _, _ ->
+            if (!text.isNullOrBlank()) {
+                error = if (text.length <= 6) {
+                    resources.getString(R.string.password_minimum)
+                } else {
+                    null
                 }
             }
-
-            override fun afterTextChanged(s: Editable) {
-
-            }
-        })
+        }
     }
 }

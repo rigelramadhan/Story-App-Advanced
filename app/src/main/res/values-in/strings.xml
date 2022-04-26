@@ -65,4 +65,5 @@
     <string name="no_stories_found">Tidak ada story</string>
     <string name="expand_description">Lihat utuh deskripsi</string>
     <string name="expand_image">Lihat utuh gambar</string>
+    <string name="stories_map">Stories Map</string>
 </resources>

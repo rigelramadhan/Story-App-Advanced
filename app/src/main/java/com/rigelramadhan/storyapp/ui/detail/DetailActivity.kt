@@ -3,6 +3,7 @@ package com.rigelramadhan.storyapp.ui.detail
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import com.bumptech.glide.Glide
+import com.rigelramadhan.storyapp.data.remote.responses.StoryEntity
 import com.rigelramadhan.storyapp.databinding.ActivityDetailBinding
 
 class DetailActivity : AppCompatActivity() {
@@ -19,9 +20,11 @@ class DetailActivity : AppCompatActivity() {
     }
 
     private fun setupView() {
-        val name = intent.getStringExtra(NAME_EXTRA)
-        val description = intent.getStringExtra(DESCRIPTION_EXTRA)
-        val imgUrl = intent.getStringExtra(IMAGE_URL_EXTRA)
+        val story = intent.getParcelableExtra<StoryEntity>(STORY_EXTRA)
+
+        val name = story?.name
+        val description = story?.description
+        val imgUrl = story?.photoUrl
 
         supportActionBar?.title = name
         supportActionBar?.setDisplayShowHomeEnabled(true)
@@ -34,8 +37,6 @@ class DetailActivity : AppCompatActivity() {
     }
 
     companion object {
-        const val NAME_EXTRA = "name_extra"
-        const val DESCRIPTION_EXTRA = "desc_extra"
-        const val IMAGE_URL_EXTRA = "img_extra"
+        const val STORY_EXTRA = "story_extra"
     }
 }
