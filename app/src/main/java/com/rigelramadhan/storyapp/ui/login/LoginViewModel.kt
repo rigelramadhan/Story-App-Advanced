@@ -4,11 +4,8 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.viewModelScope
 import com.rigelramadhan.storyapp.data.repository.UserRepository
 import com.rigelramadhan.storyapp.di.AppModule
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class LoginViewModel(
     private val userRepository: UserRepository

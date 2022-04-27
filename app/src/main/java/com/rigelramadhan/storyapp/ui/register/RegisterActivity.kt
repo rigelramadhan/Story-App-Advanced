@@ -1,16 +1,15 @@
 package com.rigelramadhan.storyapp.ui.register
 
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.view.View
 import android.widget.Toast
 import androidx.activity.viewModels
+import androidx.appcompat.app.AppCompatActivity
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.data.Result
 import com.rigelramadhan.storyapp.databinding.ActivityRegisterBinding
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 class RegisterActivity : AppCompatActivity() {
 

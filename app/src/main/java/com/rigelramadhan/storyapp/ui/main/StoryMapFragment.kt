@@ -14,7 +14,6 @@ import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
-import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
@@ -24,7 +23,6 @@ import com.rigelramadhan.storyapp.data.Result
 import com.rigelramadhan.storyapp.data.remote.responses.StoryEntity
 import com.rigelramadhan.storyapp.databinding.FragmentStoryMapBinding
 import com.rigelramadhan.storyapp.ui.detail.DetailActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 class StoryMapFragment : Fragment() {
 

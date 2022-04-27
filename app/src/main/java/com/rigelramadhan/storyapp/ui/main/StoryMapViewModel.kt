@@ -4,13 +4,9 @@ import android.content.Context
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
-import androidx.lifecycle.asLiveData
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.data.repository.StoryRepository
 import com.rigelramadhan.storyapp.data.repository.UserRepository
 import com.rigelramadhan.storyapp.di.AppModule
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 class StoryMapViewModel(
     private val storyRepository: StoryRepository,

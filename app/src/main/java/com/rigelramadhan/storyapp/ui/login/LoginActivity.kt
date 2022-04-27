@@ -13,7 +13,6 @@ import com.rigelramadhan.storyapp.databinding.ActivityLoginBinding
 import com.rigelramadhan.storyapp.ui.main.MainActivity
 import com.rigelramadhan.storyapp.ui.register.RegisterActivity
 import com.rigelramadhan.storyapp.ui.welcome.WelcomeActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 class LoginActivity : AppCompatActivity() {
 

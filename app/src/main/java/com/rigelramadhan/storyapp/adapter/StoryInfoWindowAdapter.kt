@@ -2,12 +2,10 @@ package com.rigelramadhan.storyapp.adapter
 
 import android.app.Activity
 import android.view.View
-import com.bumptech.glide.Glide
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.Marker
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.databinding.StoryInfoWindowBinding
-import kotlinx.coroutines.runBlocking
 
 class StoryInfoWindowAdapter(private val context: Activity) :
     GoogleMap.InfoWindowAdapter {

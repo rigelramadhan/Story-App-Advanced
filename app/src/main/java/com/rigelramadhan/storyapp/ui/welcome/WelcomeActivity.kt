@@ -9,7 +9,6 @@ import androidx.activity.viewModels
 import androidx.appcompat.app.AppCompatActivity
 import com.rigelramadhan.storyapp.databinding.ActivityWelcomeBinding
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 class WelcomeActivity : AppCompatActivity() {
 

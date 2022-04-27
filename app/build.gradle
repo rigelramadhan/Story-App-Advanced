@@ -3,7 +3,6 @@ plugins {
     id 'org.jetbrains.kotlin.android'
     id 'kotlin-kapt'
     id 'com.google.android.libraries.mapsplatform.secrets-gradle-plugin'
-    id 'dagger.hilt.android.plugin'
     id 'kotlin-parcelize'
 }
 
@@ -106,16 +105,6 @@ dependencies {
 
 //    PAGING
     implementation "androidx.paging:paging-runtime-ktx:3.1.1"
-
-//    HILT
-    implementation 'com.google.dagger:hilt-android:2.41'
-    kapt 'com.google.dagger:hilt-compiler:2.41'
-
-    androidTestImplementation  'com.google.dagger:hilt-android-testing:2.41'
-    kaptAndroidTest 'com.google.dagger:hilt-compiler:2.41'
-
-    testImplementation 'com.google.dagger:hilt-android-testing:2.41'
-    kaptTest 'com.google.dagger:hilt-compiler:2.41'
 
 //    MOCKITO
     testImplementation 'org.mockito:mockito-core:3.12.4'

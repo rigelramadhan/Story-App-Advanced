@@ -8,8 +8,6 @@ import androidx.paging.ExperimentalPagingApi
 import com.rigelramadhan.storyapp.data.repository.StoryRepository
 import com.rigelramadhan.storyapp.data.repository.UserRepository
 import com.rigelramadhan.storyapp.di.AppModule
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
 
 class StoryListViewModel(private val storyRepository: StoryRepository, private val userRepository: UserRepository) :
     ViewModel() {

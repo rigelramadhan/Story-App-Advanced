@@ -1,12 +1,11 @@
 package com.rigelramadhan.storyapp.ui.main
 
 import android.content.Context
-import androidx.lifecycle.*
-import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.ViewModel
+import androidx.lifecycle.ViewModelProvider
 import com.rigelramadhan.storyapp.data.repository.UserRepository
 import com.rigelramadhan.storyapp.di.AppModule
-import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 
 class MainViewModel(
     private val userRepository: UserRepository

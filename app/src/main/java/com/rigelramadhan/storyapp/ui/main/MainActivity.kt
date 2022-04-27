@@ -18,7 +18,6 @@ import com.rigelramadhan.storyapp.adapter.SectionPageAdapter
 import com.rigelramadhan.storyapp.databinding.ActivityMainBinding
 import com.rigelramadhan.storyapp.ui.camera.CameraActivity
 import com.rigelramadhan.storyapp.ui.login.LoginActivity
-import dagger.hilt.android.AndroidEntryPoint
 
 class MainActivity : AppCompatActivity() {
 

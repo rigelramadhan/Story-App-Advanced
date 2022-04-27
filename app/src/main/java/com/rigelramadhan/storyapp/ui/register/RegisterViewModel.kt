@@ -5,9 +5,6 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import com.rigelramadhan.storyapp.data.repository.UserRepository
 import com.rigelramadhan.storyapp.di.AppModule
-import dagger.hilt.android.lifecycle.HiltViewModel
-import javax.inject.Inject
-import javax.inject.Singleton
 
 class RegisterViewModel(private val userRepository: UserRepository) :
     ViewModel() {

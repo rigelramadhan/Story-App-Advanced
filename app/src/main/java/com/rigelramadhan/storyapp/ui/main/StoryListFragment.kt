@@ -1,7 +1,6 @@
 package com.rigelramadhan.storyapp.ui.main
 
 import android.os.Bundle
-import android.util.Log
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
@@ -12,12 +11,10 @@ import androidx.lifecycle.lifecycleScope
 import androidx.paging.ExperimentalPagingApi
 import androidx.paging.LoadState
 import androidx.recyclerview.widget.LinearLayoutManager
-import androidx.swiperefreshlayout.widget.SwipeRefreshLayout
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.adapter.StoriesAdapter
 import com.rigelramadhan.storyapp.adapter.StoryLoadingStateAdapter
 import com.rigelramadhan.storyapp.databinding.FragmentStoryListBinding
-import dagger.hilt.android.AndroidEntryPoint
 import kotlinx.coroutines.launch
 
 class StoryListFragment : Fragment() {

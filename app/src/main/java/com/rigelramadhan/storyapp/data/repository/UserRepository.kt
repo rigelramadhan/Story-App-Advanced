@@ -1,13 +1,11 @@
 package com.rigelramadhan.storyapp.data.repository
 
 import androidx.lifecycle.LiveData
-import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.asLiveData
 import androidx.lifecycle.liveData
 import com.rigelramadhan.storyapp.data.Result
 import com.rigelramadhan.storyapp.data.local.datastore.LoginPreferences
 import com.rigelramadhan.storyapp.data.remote.responses.LoginResponse
-import com.rigelramadhan.storyapp.data.remote.responses.RegisterResponse
 import com.rigelramadhan.storyapp.data.remote.retrofit.ApiService
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
