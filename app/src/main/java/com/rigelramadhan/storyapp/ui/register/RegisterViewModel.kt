@@ -11,8 +11,6 @@ import javax.inject.Singleton
 
 class RegisterViewModel(private val userRepository: UserRepository) :
     ViewModel() {
-    fun getRegisterResult() = userRepository.getRegisterResult()
-
     fun registerUser(name: String, email: String, password: String) =
         userRepository.register(name, email, password)
 

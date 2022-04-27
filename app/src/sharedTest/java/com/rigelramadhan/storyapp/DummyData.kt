@@ -2,6 +2,7 @@ package com.rigelramadhan.storyapp
 
 import com.rigelramadhan.storyapp.data.local.entity.StoryRemoteKeys
 import com.rigelramadhan.storyapp.data.remote.responses.*
+import java.io.File
 
 
 object DummyData {
@@ -79,4 +80,12 @@ object DummyData {
             message = "Story created successfully"
         )
     }
+
+    fun generateDummyPostStoryParameters() = mapOf<String, Any>(
+        "token" to "12345",
+        "file" to File(""),
+        "description" to "This is description",
+        "lat" to 100f,
+        "lon" to 100f
+    )
 }

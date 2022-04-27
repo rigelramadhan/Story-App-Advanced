@@ -14,17 +14,11 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlin.coroutines.CoroutineContext
 
-class UserRepository private constructor(
+class UserRepository (
     private val apiService: ApiService,
     private val loginPreferences: LoginPreferences
-) : UserDataSource, CoroutineScope {
-    private val loginResult = MutableLiveData<Result<LoginResponse>>()
-    private val registerResult = MutableLiveData<Result<RegisterResponse>>()
-
-    override fun getRegisterResult(): LiveData<Result<RegisterResponse>> = registerResult
-
-    override fun login(email: String, password: String): LiveData<Result<LoginResponse>> = liveData {
-        loginResult.postValue(Result.Loading)
+) : CoroutineScope {
+    fun login(email: String, password: String): LiveData<Result<LoginResponse>> = liveData {
         emit(Result.Loading)
         try {
             val response = apiService.login(
@@ -32,20 +26,17 @@ class UserRepository private constructor(
                 password
             )
             if (response.error) {
-                loginResult.postValue(Result.Error(response.message))
                 emit(Result.Error(response.message))
             } else {
-                loginResult.postValue(Result.Success(response))
                 emit(Result.Success(response))
             }
         } catch (e: Exception) {
-            loginResult.postValue(Result.Error(e.message.toString()))
             emit(Result.Error(e.message.toString()))
         }
     }
 
-    override fun register(name: String, email: String, password: String) = liveData<Result<RegisterResponse>> {
-        registerResult.value = Result.Loading
+    fun register(name: String, email: String, password: String) = liveData {
+        emit(Result.Loading)
         try {
             val response = apiService.register(
                 name,
@@ -53,32 +44,32 @@ class UserRepository private constructor(
                 password
             )
             if (response.error) {
-                registerResult.value = Result.Error(response.message)
+                emit(Result.Error(response.message))
             } else {
-                registerResult.value = Result.Success(response)
+                emit(Result.Success(response))
             }
         } catch (e: Exception) {
-            registerResult.value = Result.Error(e.message.toString())
+            emit(Result.Error(e.message.toString()))
         }
     }
 
-    override fun getToken(): LiveData<String> = loginPreferences.getToken().asLiveData()
+    fun getToken(): LiveData<String> = loginPreferences.getToken().asLiveData()
 
-    override fun deleteToken() {
+    fun deleteToken() {
         launch(Dispatchers.IO) {
             loginPreferences.deleteToken()
         }
     }
 
-    override fun isFirstTime(): LiveData<Boolean> = loginPreferences.isFirstTime().asLiveData()
+    fun isFirstTime(): LiveData<Boolean> = loginPreferences.isFirstTime().asLiveData()
 
-    override fun saveToken(token: String) {
+    fun saveToken(token: String) {
         launch(Dispatchers.IO) {
             loginPreferences.saveToken(token)
         }
     }
 
-    override fun setFirstTime(firstTime: Boolean) {
+    fun setFirstTime(firstTime: Boolean) {
         launch(Dispatchers.IO) {
             loginPreferences.setFirstTime(firstTime)
         }

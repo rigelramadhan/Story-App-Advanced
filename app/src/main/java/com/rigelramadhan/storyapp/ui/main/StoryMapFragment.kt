@@ -2,16 +2,19 @@ package com.rigelramadhan.storyapp.ui.main
 
 import android.annotation.SuppressLint
 import android.content.Intent
+import android.content.res.Resources
 import android.os.Bundle
 import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
+import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
+import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
 import com.rigelramadhan.storyapp.R
 import com.rigelramadhan.storyapp.adapter.StoryInfoWindowAdapter
@@ -39,6 +42,7 @@ class StoryMapFragment : Fragment() {
             intent.putExtra(DetailActivity.STORY_EXTRA, story)
             startActivity(intent)
         }
+        setMapStyle(googleMap)
 
         loadStoriesIntoMap(googleMap)
     }
@@ -82,6 +86,18 @@ class StoryMapFragment : Fragment() {
 
             val markerTag = googleMap.addMarker(marker)
             markerTag?.tag = story
+        }
+    }
+
+    private fun setMapStyle(mMap: GoogleMap) {
+        try {
+            val success =
+                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style))
+            if (!success) {
+                Toast.makeText(requireContext(), getString(R.string.failed_load_map), Toast.LENGTH_SHORT).show()
+            }
+        } catch (exception: Resources.NotFoundException) {
+            Toast.makeText(requireContext(), getString(R.string.failed_load_map), Toast.LENGTH_SHORT).show()
         }
     }
 }

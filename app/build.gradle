@@ -93,6 +93,7 @@ dependencies {
     implementation "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
     testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
     androidTestImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
+    testImplementation 'app.cash.turbine:turbine:0.7.0'
 
 //    DATASTORE
     implementation "androidx.datastore:datastore-preferences:1.0.0"

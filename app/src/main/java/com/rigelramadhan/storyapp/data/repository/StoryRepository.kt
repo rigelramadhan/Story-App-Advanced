@@ -22,9 +22,9 @@ import javax.inject.Singleton
 class StoryRepository (
     private val apiService: ApiService,
     private val database: StoryDatabase
-) : StoryDataSource {
+) {
     @OptIn(ExperimentalPagingApi::class)
-    override fun getStories(token: String): LiveData<PagingData<StoryEntity>> {
+    fun getStories(token: String): LiveData<PagingData<StoryEntity>> {
         val pagingSourceFactory = { database.storyDao().getStories() }
 
         return Pager(
@@ -40,7 +40,7 @@ class StoryRepository (
         ).liveData
     }
 
-    override fun getStoriesWithLocation(token: String): LiveData<Result<List<StoryEntity>>> =
+    fun getStoriesWithLocation(token: String): LiveData<Result<List<StoryEntity>>> =
         liveData {
             emit(Result.Loading)
             try {
@@ -56,7 +56,7 @@ class StoryRepository (
             }
         }
 
-    override fun postStory(
+    fun postStory(
         token: String,
         imageFile: File,
         description: String,

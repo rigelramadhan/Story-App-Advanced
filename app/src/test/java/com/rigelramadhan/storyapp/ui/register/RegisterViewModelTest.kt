@@ -40,29 +40,7 @@ class RegisterViewModelTest {
     }
 
     @Test
-    fun `When Get RegisterResponse Should Not Null And Return Success`() {
-        val observer = Observer<Result<RegisterResponse>> {}
-        try {
-            val dummyRegisterResponse = DummyData.generateDummyRegisterResponse()
-            val expectedRegisterResponse = MutableLiveData<Result<RegisterResponse>>()
-            expectedRegisterResponse.value = Result.Success(dummyRegisterResponse)
-            `when`(registerViewModel.getRegisterResult()).thenReturn(expectedRegisterResponse)
-
-            val actualRegisterResponse = registerViewModel.getRegisterResult().getOrAwaitValue()
-            Mockito.verify(userRepository).getRegisterResult()
-            assertNotNull(actualRegisterResponse)
-            assertTrue(actualRegisterResponse is Result.Success)
-            assertEquals(
-                dummyRegisterResponse.message,
-                (actualRegisterResponse as Result.Success).data.message
-            )
-        } finally {
-            registerViewModel.getRegisterResult().removeObserver(observer)
-        }
-    }
-
-    @Test
-    fun `When registerUser Should Return Success And Run In Repository Once`() {
+    fun `When registerUser Valid Should Return Success`() {
         val observer = Observer<Result<RegisterResponse>> {}
         val dummyName = "Test"
         val dummyEmail = "test@mail.com"
