@@ -10,9 +10,11 @@ import android.view.ViewGroup
 import android.widget.Toast
 import androidx.fragment.app.Fragment
 import androidx.fragment.app.viewModels
+import com.google.android.gms.maps.CameraUpdateFactory
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.SupportMapFragment
+import com.google.android.gms.maps.model.CameraPosition
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.android.gms.maps.model.MarkerOptions
@@ -42,14 +44,17 @@ class StoryMapFragment : Fragment() {
             intent.putExtra(DetailActivity.STORY_EXTRA, story)
             startActivity(intent)
         }
+        googleMap.moveCamera(CameraUpdateFactory.newLatLngZoom(LatLng(-5.0, 105.0), 5f))
         setMapStyle(googleMap)
 
         loadStoriesIntoMap(googleMap)
     }
 
-    override fun onCreateView(inflater: LayoutInflater,
-                              container: ViewGroup?,
-                              savedInstanceState: Bundle?): View {
+    override fun onCreateView(
+        inflater: LayoutInflater,
+        container: ViewGroup?,
+        savedInstanceState: Bundle?
+    ): View {
         _binding = FragmentStoryMapBinding.inflate(inflater, container, false)
         return binding.root
     }
@@ -92,12 +97,25 @@ class StoryMapFragment : Fragment() {
     private fun setMapStyle(mMap: GoogleMap) {
         try {
             val success =
-                mMap.setMapStyle(MapStyleOptions.loadRawResourceStyle(requireContext(), R.raw.map_style))
+                mMap.setMapStyle(
+                    MapStyleOptions.loadRawResourceStyle(
+                        requireContext(),
+                        R.raw.map_style
+                    )
+                )
             if (!success) {
-                Toast.makeText(requireContext(), getString(R.string.failed_load_map), Toast.LENGTH_SHORT).show()
+                Toast.makeText(
+                    requireContext(),
+                    getString(R.string.failed_load_map),
+                    Toast.LENGTH_SHORT
+                ).show()
             }
         } catch (exception: Resources.NotFoundException) {
-            Toast.makeText(requireContext(), getString(R.string.failed_load_map), Toast.LENGTH_SHORT).show()
+            Toast.makeText(
+                requireContext(),
+                getString(R.string.failed_load_map),
+                Toast.LENGTH_SHORT
+            ).show()
         }
     }
 }
